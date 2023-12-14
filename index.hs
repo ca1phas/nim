@@ -3,7 +3,7 @@ import Text.Read (readMaybe)
 -- Types
 type Board = [Int]
 
--- I/O utilities
+-- I/O logic
 putRow :: Int -> Int -> IO ()
 putRow row count = do
   if count == 0
@@ -44,6 +44,8 @@ selectRow board = do
     else do
       putStrLn "Invalid row."
       selectRow board
+  where
+    validRow b r = r > 0 && r < (length b + 1) && b !! (r - 1) /= 0
 
 selectCount :: Board -> Int -> IO Int
 selectCount board row = do
@@ -54,14 +56,10 @@ selectCount board row = do
     else do
       putStrLn "Invalid count."
       selectCount board row
+  where
+    validCount b r c = c > 0 && c <= b !! (r - 1)
 
--- logic
-validRow :: Board -> Int -> Bool
-validRow board row = row > 0 && row < (length board + 1) && board !! (row - 1) /= 0
-
-validCount :: Board -> Int -> Int -> Bool
-validCount board row count = count > 0 && count <= board !! (row - 1)
-
+-- Logic
 complete :: Board -> Bool
 complete = all (== 0)
 
