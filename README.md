@@ -14,3 +14,9 @@ The board comprises five rows of stars:<br>
 Two players take turn to remove one or more stars from the end of a single row.
 
 The winner is the player who removes the last star(s) from the board.
+
+### How to use the program
+
+1. Open a terminal window.
+2. Type `ghci index.hs` and press Enter.
+3. Type `nim` and press Enter.
