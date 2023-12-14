@@ -3,7 +3,7 @@ import Text.Read (readMaybe)
 -- Types
 type Board = [Int]
 
--- Output
+-- I/O utilities
 putRow :: Int -> Int -> IO ()
 putRow row count = do
   if count == 0
@@ -28,16 +28,12 @@ putBoard board = do
       putBoardRow board 1
       putStrLn "-----------------------"
 
--- Input
 getNatNum :: IO Int
 getNatNum = do
   str <- do getLine
   case readMaybe str of
     Just n -> return n
     Nothing -> return (-1)
-
-validRow :: Board -> Int -> Bool
-validRow board row = row > 0 && row < (length board + 1) && board !! (row - 1) /= 0
 
 selectRow :: Board -> IO Int
 selectRow board = do
@@ -48,9 +44,6 @@ selectRow board = do
     else do
       putStrLn "Invalid row."
       selectRow board
-
-validCount :: Board -> Int -> Int -> Bool
-validCount board row count = count > 0 && count <= board !! (row - 1)
 
 selectCount :: Board -> Int -> IO Int
 selectCount board row = do
@@ -63,22 +56,35 @@ selectCount board row = do
       selectCount board row
 
 -- logic
-isComplete :: Board -> Bool
-isComplete = foldr (\r -> (&&) (r == 0)) True
+validRow :: Board -> Int -> Bool
+validRow board row = row > 0 && row < (length board + 1) && board !! (row - 1) /= 0
+
+validCount :: Board -> Int -> Int -> Bool
+validCount board row count = count > 0 && count <= board !! (row - 1)
+
+complete :: Board -> Bool
+complete = all (== 0)
 
 updateBoard :: Board -> Int -> Int -> Board
 updateBoard board row count = [if r == row then c - count else c | (r, c) <- zip [1 ..] board]
 
+changePlayer :: Int -> Int
+changePlayer 1 = 2
+changePlayer 2 = 1
+changePlayer _ = 0
+
 play :: Board -> Int -> IO ()
 play board player = do
   putBoard board
-  if isComplete board
-    then putStrLn ("The winnder is player " ++ show player ++ "!")
+  if complete board
+    then
+      putStrLn
+        ("The winnder is player " ++ show (changePlayer player) ++ "!")
     else do
       putStrLn ("It's player " ++ show player ++ "'s turn.")
       row <- selectRow board
       count <- selectCount board row
-      play (updateBoard board row count) (if player == 1 then 2 else 1)
+      play (updateBoard board row count) (changePlayer player)
 
 -- NIM
 nim :: IO ()
